@@ -77,8 +77,7 @@
 - 如果后面移动了项目目录，或者换到另一台机器上，用户级 Gemini hooks 和 `~/.local/bin/gemini-no-pet` 这两个全局入口都需要重新安装一次，保证它们仍然指向正确的位置。
 - 上游 clone 目录包含自己的 `.git` 历史，后续不能原样跟最终单文件夹 GitHub 项目一起发布。
 - 还没有验证 Gemini 在多任务或多会话情况下是否需要不同的 `session_id` 策略。
-- `macos_clawd/` 现在已经初始化成本地 Git 仓库，并且远程指向 `https://github.com/thefatheroffire/clawd-on-desk-macos.git`，但这台机器目前没有安装 `gh`，首轮远程推送还没有完成。
-- 第一次执行 `git push -u origin main` 时已经走到了 GitHub 网络层，但最终报错 `could not read Username for 'https://github.com': Device not configured`，说明这台机器还需要先把 GitHub 的 HTTPS 认证给 `git` 配好，发布才能完成。
+- `macos_clawd/` 现在已经初始化成本地 Git 仓库，并且已经通过 SSH 发布到 `git@github.com:thefatheroffire/clawd-on-desk-macos.git`；只要这台机器继续保留当前 GitHub SSH key，后续推送都可以继续走 SSH。
 
 ## Next Action / 下一步行动
 
@@ -94,7 +93,7 @@
 
 发布侧待办：
 
-- 创建或确认公开 GitHub 仓库 `thefatheroffire/clawd-on-desk-macos`，然后先在这台机器上完成 GitHub HTTPS 的 `git` 认证，再从本地 `macos_clawd/` Git 仓库完成第一次推送。
+- 后续继续通过 SSH 远程 `git@github.com:thefatheroffire/clawd-on-desk-macos.git` 推送本地 `macos_clawd/` 仓库的更新。
 
 建议起手命令：
 
@@ -930,6 +929,14 @@ Result: FAIL
 Notes: 在放开网络后，命令已经能连到 GitHub，但当前被本机的 GitHub HTTPS 凭据拦住了：`could not read Username for 'https://github.com': Device not configured`。
 ```
 
+```text
+Date: 2026-03-22
+Module: Publishing Prep
+Command: GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new' git -C macos_clawd push -u origin main
+Result: PASS
+Notes: 已经把 origin 改成 SSH，并成功把 main 分支发布到 git@github.com:thefatheroffire/clawd-on-desk-macos.git。
+```
+
 ---
 
 ## Session Log / 会话日志
@@ -948,6 +955,19 @@ Notes: 在放开网络后，命令已经能连到 GitHub，但当前被本机的
   - 当前目标远程仍然是 `origin -> https://github.com/thefatheroffire/clawd-on-desk-macos.git`。
 - Recommended next step / 建议下一步：
   - 先在这台机器上完成 GitHub 认证、确认公开仓库已存在，然后重新执行 `git -C macos_clawd push -u origin main`。
+
+### 2026-03-22 Session 22
+
+- What happened / 本次发生了什么：
+  - 把 `origin` 从 HTTPS 切到了 SSH：`git@github.com:thefatheroffire/clawd-on-desk-macos.git`。
+  - 复用了本机的 `~/.ssh/id_rsa`，通过 `GIT_SSH_COMMAND` 成功把 `main` 推到了 GitHub。
+  - 已确认本地分支现在开始跟踪 `origin/main`。
+- Current truth / 当前真实状态：
+  - 公开仓库现在已经在 GitHub 上线，本地 `macos_clawd/` 仓库也已经通过 SSH 和它连通。
+  - 只要这台机器继续保留当前 GitHub SSH key，后续推送都应该可以继续通过 SSH 完成。
+  - 主线实现任务现在重新回到打包和应用分发。
+- Recommended next step / 建议下一步：
+  - 继续推进 `M6 - Packaging and App Distribution`，后续新提交继续通过 SSH 推送到 `origin/main`。
 
 ### 2026-03-22 Session 20
 

@@ -76,8 +76,7 @@ Based on the public repository below, build a working macOS version that preserv
 - If the app directory moves or the setup is reproduced on another machine, both the global Gemini hooks and the `~/.local/bin/gemini-no-pet` command must be reinstalled so their target locations stay correct.
 - The upstream clone contains its own `.git` history, which should not be shipped unchanged inside the final single-folder GitHub project.
 - Multi-session or multi-task Gemini behavior has not been validated yet.
-- `macos_clawd/` is now initialized as a local Git repository and points at `https://github.com/thefatheroffire/clawd-on-desk-macos.git`, but this machine does not have `gh` installed and the first remote push has not been completed yet.
-- A first `git push -u origin main` attempt reached GitHub networking but failed with `could not read Username for 'https://github.com': Device not configured`, so GitHub HTTPS authentication still needs to be set up on this machine before publishing can complete.
+- `macos_clawd/` is now initialized as a local Git repository and published to `git@github.com:thefatheroffire/clawd-on-desk-macos.git`; future pushes can continue over SSH as long as the current GitHub SSH key remains available on this machine.
 
 ## Next Action
 
@@ -93,7 +92,7 @@ Immediately after that:
 
 Operational publishing follow-up:
 
-- Create or verify the public GitHub repository `thefatheroffire/clawd-on-desk-macos`, then authenticate Git for GitHub HTTPS access on this machine and rerun the first push from the local `macos_clawd/` Git repository.
+- Keep using the SSH remote `git@github.com:thefatheroffire/clawd-on-desk-macos.git` for future pushes from the local `macos_clawd/` Git repository.
 
 Suggested initial commands:
 
@@ -918,6 +917,14 @@ Result: FAIL
 Notes: Network resolution succeeded after escalation, but GitHub HTTPS push is currently blocked on local credentials: `could not read Username for 'https://github.com': Device not configured`.
 ```
 
+```text
+Date: 2026-03-22
+Module: Publishing Prep
+Command: GIT_SSH_COMMAND='ssh -i ~/.ssh/id_rsa -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new' git -C macos_clawd push -u origin main
+Result: PASS
+Notes: Switched origin to SSH and successfully published branch main to git@github.com:thefatheroffire/clawd-on-desk-macos.git.
+```
+
 ---
 
 ## Session Log
@@ -936,6 +943,19 @@ Use one new entry per work session. Newest entry goes on top.
   - The intended remote remains `origin -> https://github.com/thefatheroffire/clawd-on-desk-macos.git`.
 - Recommended next step:
   - Authenticate GitHub access for `git` on this machine, verify that the public repo exists, and rerun `git -C macos_clawd push -u origin main`.
+
+### 2026-03-22 Session 22
+
+- What happened:
+  - Switched `origin` from HTTPS to SSH: `git@github.com:thefatheroffire/clawd-on-desk-macos.git`.
+  - Reused the local `~/.ssh/id_rsa` key with `GIT_SSH_COMMAND` and successfully pushed `main` to GitHub.
+  - Verified that the local branch now tracks `origin/main`.
+- Current truth:
+  - The public repository is now live on GitHub and the local `macos_clawd/` repo is connected to it over SSH.
+  - Future pushes should continue to work through the SSH remote as long as this machine keeps access to the same GitHub SSH key.
+  - The main implementation track is back to packaging and app distribution.
+- Recommended next step:
+  - Continue with `M6 - Packaging and App Distribution`, then push follow-up commits to `origin/main` over SSH.
 
 ### 2026-03-22 Session 20
 
