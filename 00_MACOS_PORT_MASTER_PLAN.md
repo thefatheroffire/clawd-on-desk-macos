@@ -77,6 +77,7 @@ Based on the public repository below, build a working macOS version that preserv
 - The upstream clone contains its own `.git` history, which should not be shipped unchanged inside the final single-folder GitHub project.
 - Multi-session or multi-task Gemini behavior has not been validated yet.
 - `macos_clawd/` is now initialized as a local Git repository and points at `https://github.com/thefatheroffire/clawd-on-desk-macos.git`, but this machine does not have `gh` installed and the first remote push has not been completed yet.
+- A first `git push -u origin main` attempt reached GitHub networking but failed with `could not read Username for 'https://github.com': Device not configured`, so GitHub HTTPS authentication still needs to be set up on this machine before publishing can complete.
 
 ## Next Action
 
@@ -92,7 +93,7 @@ Immediately after that:
 
 Operational publishing follow-up:
 
-- Create or verify the public GitHub repository `thefatheroffire/clawd-on-desk-macos`, then perform the first push from the local `macos_clawd/` Git repository.
+- Create or verify the public GitHub repository `thefatheroffire/clawd-on-desk-macos`, then authenticate Git for GitHub HTTPS access on this machine and rerun the first push from the local `macos_clawd/` Git repository.
 
 Suggested initial commands:
 
@@ -909,11 +910,32 @@ Result: PASS
 Notes: Initialized macos_clawd as a standalone local Git repository for publishing, added a root .gitignore to keep local-only runtime data out of version control, and configured the intended public GitHub remote URL.
 ```
 
+```text
+Date: 2026-03-22
+Module: Publishing Prep
+Command: git -C macos_clawd push -u origin main
+Result: FAIL
+Notes: Network resolution succeeded after escalation, but GitHub HTTPS push is currently blocked on local credentials: `could not read Username for 'https://github.com': Device not configured`.
+```
+
 ---
 
 ## Session Log
 
 Use one new entry per work session. Newest entry goes on top.
+
+### 2026-03-22 Session 21
+
+- What happened:
+  - Created the first local commit for the publishable `macos_clawd/` repository on branch `main`.
+  - Attempted the first `git push -u origin main` against `https://github.com/thefatheroffire/clawd-on-desk-macos.git`.
+  - Confirmed that the current blocker is GitHub HTTPS authentication on this machine, not repository structure or local Git state.
+- Current truth:
+  - Local Git history now exists and is ready to publish.
+  - The push flow is waiting on GitHub credentials or an alternate authenticated transport such as SSH.
+  - The intended remote remains `origin -> https://github.com/thefatheroffire/clawd-on-desk-macos.git`.
+- Recommended next step:
+  - Authenticate GitHub access for `git` on this machine, verify that the public repo exists, and rerun `git -C macos_clawd push -u origin main`.
 
 ### 2026-03-22 Session 20
 

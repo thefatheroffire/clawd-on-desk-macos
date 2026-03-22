@@ -78,6 +78,7 @@
 - 上游 clone 目录包含自己的 `.git` 历史，后续不能原样跟最终单文件夹 GitHub 项目一起发布。
 - 还没有验证 Gemini 在多任务或多会话情况下是否需要不同的 `session_id` 策略。
 - `macos_clawd/` 现在已经初始化成本地 Git 仓库，并且远程指向 `https://github.com/thefatheroffire/clawd-on-desk-macos.git`，但这台机器目前没有安装 `gh`，首轮远程推送还没有完成。
+- 第一次执行 `git push -u origin main` 时已经走到了 GitHub 网络层，但最终报错 `could not read Username for 'https://github.com': Device not configured`，说明这台机器还需要先把 GitHub 的 HTTPS 认证给 `git` 配好，发布才能完成。
 
 ## Next Action / 下一步行动
 
@@ -93,7 +94,7 @@
 
 发布侧待办：
 
-- 创建或确认公开 GitHub 仓库 `thefatheroffire/clawd-on-desk-macos`，然后从本地 `macos_clawd/` Git 仓库完成第一次推送。
+- 创建或确认公开 GitHub 仓库 `thefatheroffire/clawd-on-desk-macos`，然后先在这台机器上完成 GitHub HTTPS 的 `git` 认证，再从本地 `macos_clawd/` Git 仓库完成第一次推送。
 
 建议起手命令：
 
@@ -921,11 +922,32 @@ Result: PASS
 Notes: 已经把 macos_clawd 初始化成一个可独立发布的本地 Git 仓库，新增了根目录 .gitignore 来挡住本地运行数据，并配置好了目标公开仓库的远程地址。
 ```
 
+```text
+Date: 2026-03-22
+Module: Publishing Prep
+Command: git -C macos_clawd push -u origin main
+Result: FAIL
+Notes: 在放开网络后，命令已经能连到 GitHub，但当前被本机的 GitHub HTTPS 凭据拦住了：`could not read Username for 'https://github.com': Device not configured`。
+```
+
 ---
 
 ## Session Log / 会话日志
 
 每个工作会话新增一条记录，最新记录放最上面。
+
+### 2026-03-22 Session 21
+
+- What happened / 本次发生了什么：
+  - 已经在本地 `macos_clawd/` 仓库上创建了第一次提交，并把分支整理成了 `main`。
+  - 实际对 `https://github.com/thefatheroffire/clawd-on-desk-macos.git` 跑了一次 `git push -u origin main`。
+  - 已确认当前真正的阻塞点不是仓库结构，而是这台机器上的 GitHub HTTPS 认证还没给 `git` 配好。
+- Current truth / 当前真实状态：
+  - 本地 Git 历史已经就位，仓库处于可以发布的状态。
+  - 首次推送现在卡在 GitHub 凭据层，或者后续可以改走 SSH 这类已认证传输方式。
+  - 当前目标远程仍然是 `origin -> https://github.com/thefatheroffire/clawd-on-desk-macos.git`。
+- Recommended next step / 建议下一步：
+  - 先在这台机器上完成 GitHub 认证、确认公开仓库已存在，然后重新执行 `git -C macos_clawd push -u origin main`。
 
 ### 2026-03-22 Session 20
 
