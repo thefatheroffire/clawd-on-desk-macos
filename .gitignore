@@ -1,0 +1,21 @@
+.DS_Store
+Thumbs.db
+
+# Local-only upstream reference
+upstream/
+
+# Dependency and build output
+**/node_modules/
+**/dist/
+**/build/
+
+# Local runtime data
+**/logs/
+**/.npm-cache/
+**/.gemini/
+**/.env
+**/.env.*
+
+# Python cache
+**/__pycache__/
+**/*.pyc
